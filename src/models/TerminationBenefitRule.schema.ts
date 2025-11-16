@@ -6,7 +6,7 @@ export class TerminationBenefitRule {
   @Prop({ required: true }) name: string;
   @Prop() condition: string;
   @Prop({ required: true }) formula: string;
-  @Prop({ default: 'draft', enum: ['draft','pending','approved','rejected'] }) status: string;
+  @Prop({ default: 'pending', enum: ['pending','approved','rejected'] }) status: string;
   @Prop({ type: Types.ObjectId, ref: 'User' }) createdBy: Types.ObjectId;
 }
 export const TerminationBenefitRuleSchema = SchemaFactory.createForClass(TerminationBenefitRule);

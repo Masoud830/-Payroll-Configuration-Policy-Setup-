@@ -11,7 +11,7 @@ export class Allowance {
   allowanceType: string;
   @Prop() description: string;
   @Prop({ type: [{ type: String }], default: [] }) appliesToContractTypes: string[];
-  @Prop({ default: 'draft', enum: ['draft','pending','approved','rejected'] }) status: string;
+  @Prop({ default: 'pending', enum: ['pending','approved','rejected'] }) status: string;
   @Prop({ type: Types.ObjectId, ref: 'User' }) createdBy: Types.ObjectId;
 }
 export const AllowanceSchema = SchemaFactory.createForClass(Allowance);

@@ -7,7 +7,7 @@ export class PayrollPolicy {
   @Prop({ unique: true }) policyCode: string;
   @Prop({ type: MongooseSchema.Types.Mixed }) value: any;
   @Prop() description: string;
-  @Prop({ default: 'draft', enum: ['draft','pending','approved','rejected'] }) status: string;
+  @Prop({ default: 'pending', enum: ['pending','approved','rejected'] }) status: string;
   @Prop({ type: Types.ObjectId, ref: 'User' }) createdBy: Types.ObjectId;
 }
 export const PayrollPolicySchema = SchemaFactory.createForClass(PayrollPolicy);

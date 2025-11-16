@@ -9,7 +9,7 @@ export class PayrollSchema {
   @Prop({ type: [{ type: Types.ObjectId, ref: 'InsuranceBracket' }], default: [] }) insuranceBrackets: Types.ObjectId[];
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Allowance' }], default: [] }) allowances: Types.ObjectId[];
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Deduction' }], default: [] }) deductions: Types.ObjectId[];
-  @Prop({ default: 'draft', enum: ['draft','pending','approved','rejected'] }) status: string;
+  @Prop({ default: 'pending', enum: ['pending','approved','rejected'] }) status: string;
   @Prop({ type: Types.ObjectId, ref: 'User' }) createdBy: Types.ObjectId;
 }
 export const PayrollSchemaSchema = SchemaFactory.createForClass(PayrollSchema);

@@ -7,7 +7,7 @@ export class PayType {
   @Prop({ required: true, unique: true }) code: string;
   @Prop({ type: String, enum: ['hourly','daily','weekly','monthly','contract-based'], required: true }) type: string;
   @Prop() description: string;
-  @Prop({ default: 'draft', enum: ['draft','pending','approved','rejected'] })
+  @Prop({ default: 'pending', enum: ['pending','approved','rejected'] })
   status: string;
   @Prop({ type: Types.ObjectId, ref: 'User' }) createdBy: Types.ObjectId;
 }

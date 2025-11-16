@@ -12,7 +12,7 @@ export class InsuranceBracket {
   @Prop({ type: Number, default: Infinity }) maxSalary: number;
   @Prop({ type: Date, default: Date.now }) effectiveFrom: Date;
   @Prop({ type: Date, default: null }) effectiveTo: Date;
-  @Prop({ default: 'draft', enum: ['draft','pending','approved','rejected'] }) status: string;
+  @Prop({ default: 'pending', enum: ['pending','approved','rejected'] }) status: string;
   @Prop({ type: Types.ObjectId, ref: 'User' }) createdBy: Types.ObjectId;
 }
 export const InsuranceBracketSchema = SchemaFactory.createForClass(InsuranceBracket);

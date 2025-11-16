@@ -7,6 +7,6 @@ export class SystemSetting {
   @Prop() label: string;
   @Prop({ type: MongooseSchema.Types.Mixed }) value: any;
   @Prop({ type: Types.ObjectId, ref: 'User' }) createdBy: Types.ObjectId;
-  @Prop({ default: 'draft', enum: ['draft','pending','approved','rejected'] }) status: string;
+  @Prop({ default: 'pending', enum: ['pending','approved','rejected'] }) status: string;
 }
 export const SystemSettingSchema = SchemaFactory.createForClass(SystemSetting);

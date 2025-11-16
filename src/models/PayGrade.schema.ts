@@ -17,7 +17,7 @@ export class PayGrade {
   deductions: Types.ObjectId[];
   @Prop({ type: Types.ObjectId, ref: 'Department' }) department: Types.ObjectId;
   @Prop({ type: Types.ObjectId, ref: 'Position' }) position: Types.ObjectId;
-  @Prop({ default: 'draft', enum: ['draft','pending','approved','rejected','archived'] })
+  @Prop({ default: 'pending', enum: ['pending','approved','rejected','archived'] })
   status: string;
   @Prop({ type: Types.ObjectId, ref: 'User' }) createdBy: Types.ObjectId;
   @Prop({ type: Types.ObjectId, ref: 'User' }) updatedBy: Types.ObjectId;

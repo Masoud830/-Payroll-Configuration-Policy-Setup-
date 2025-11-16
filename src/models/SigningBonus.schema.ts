@@ -10,7 +10,7 @@ export class SigningBonus {
   @Prop({ type: Date }) validFrom: Date;
   @Prop({ type: Date }) validTo: Date;
   @Prop({ type: Types.ObjectId, ref: 'PayGrade' }) appliesToPayGrade: Types.ObjectId;
-  @Prop({ default: 'draft', enum: ['draft','pending','approved','rejected'] }) status: string;
+  @Prop({ default: 'pending', enum: ['pending','approved','rejected'] }) status: string;
   @Prop({ type: Types.ObjectId, ref: 'User' }) createdBy: Types.ObjectId;
 }
 export const SigningBonusSchema = SchemaFactory.createForClass(SigningBonus);
