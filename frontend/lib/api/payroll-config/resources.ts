@@ -120,7 +120,7 @@ export const PAYROLL_CONFIG_RESOURCES: PayrollConfigResourceMeta[] = [
     capabilities: {
       canCreate: true,
       canEdit: true,
-      canDelete: false,
+      canDelete: true,
       canApproveReject: false,
       statusFilterMode: 'none',
     },
@@ -132,8 +132,8 @@ export const PAYROLL_CONFIG_RESOURCES: PayrollConfigResourceMeta[] = [
     capabilities: {
       canCreate: true,
       canEdit: true,
-      canDelete: false,
-      canApproveReject: false,
+      canDelete: true,
+      canApproveReject: true,
       statusFilterMode: 'optional',
     },
   },

@@ -59,16 +59,16 @@ export async function rejectConfig(
   return res.data as any;
 }
 
+export async function deleteInsuranceBracket(id: string) {
+  const res = await api.delete(`${BASE}/insurance-brackets/${id}`);
+  return res.data as any;
+}
+
 export async function deleteConfig(
   resource: PayrollConfigResourceSlug,
   id: string,
 ) {
   const res = await api.delete(`${BASE}/${resource}/${id}`);
-  return res.data as any;
-}
-
-export async function deleteInsuranceBracket(id: string) {
-  const res = await api.delete(`${BASE}/insurance-brackets/${id}`);
   return res.data as any;
 }
 

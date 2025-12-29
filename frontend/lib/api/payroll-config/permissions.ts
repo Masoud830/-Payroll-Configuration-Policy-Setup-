@@ -9,7 +9,6 @@ export type NormalizedSystemRole =
   | 'SYSTEM_ADMIN'
   | 'PAYROLL_SPECIALIST'
   | 'PAYROLL_MANAGER'
-  | 'LEGAL_POLICY_ADMIN'
   | 'FINANCE_STAFF';
 
 export type PayrollRolePermissions = {
@@ -40,7 +39,6 @@ export function normalizeRole(rawRole: string | null): NormalizedSystemRole | nu
     case 'SYSTEM_ADMIN':
     case 'PAYROLL_SPECIALIST':
     case 'PAYROLL_MANAGER':
-    case 'LEGAL_POLICY_ADMIN':
     case 'FINANCE_STAFF':
       return normalized;
     default:
@@ -53,7 +51,6 @@ export function normalizeRole(rawRole: string | null): NormalizedSystemRole | nu
       if (normalized.includes('DEPARTMENT') && normalized.includes('EMPLOYEE')) return 'DEPARTMENT_EMPLOYEE';
       if (normalized.includes('PAYROLL') && normalized.includes('MANAGER')) return 'PAYROLL_MANAGER';
       if (normalized.includes('PAYROLL') && normalized.includes('SPECIALIST')) return 'PAYROLL_SPECIALIST';
-      if (normalized.includes('LEGAL') && normalized.includes('POLICY') && normalized.includes('ADMIN')) return 'LEGAL_POLICY_ADMIN';
       if (normalized.includes('FINANCE')) return 'FINANCE_STAFF';
       return null;
   }
@@ -87,110 +84,129 @@ export function getPayrollPermissions(
 
   switch (resource) {
     case 'pay-grades': {
-      // PAYROLL_SPECIALIST: create, view, update
-      // PAYROLL_MANAGER: approve, reject, delete
+      // Employee: read-only view
+      // Department Head: read-only view
+      // HR Manager: full CRUD (within what the UI/backend expose) + approve/reject
+      // System Admin: read-only (system, not HR policy)
       return {
         ...base,
-        canSeeResource: role === 'PAYROLL_SPECIALIST' || role === 'PAYROLL_MANAGER' || role === 'HR_MANAGER' || role === 'SYSTEM_ADMIN',
-        canCreate: role === 'PAYROLL_SPECIALIST' || role === 'HR_MANAGER',
-        canEdit: role === 'PAYROLL_SPECIALIST' || role === 'HR_MANAGER',
-        canDelete: role === 'PAYROLL_MANAGER' || role === 'SYSTEM_ADMIN',
-        canApproveReject: role === 'PAYROLL_MANAGER' || role === 'SYSTEM_ADMIN',
+        canSeeResource: true,
+        canCreate: role === 'HR_MANAGER',
+        canEdit: role === 'HR_MANAGER',
+        canDelete: role === 'HR_MANAGER',
+        canApproveReject: role === 'HR_MANAGER',
       };
     }
 
     case 'pay-types': {
-      // PAYROLL_SPECIALIST: create, view, update
-      // PAYROLL_MANAGER: approve, reject, delete
+      // Employee: read-only view
+      // Department Head: read-only view
+      // HR Manager: full CRUD + approve/reject
+      // System Admin: read-only
       return {
         ...base,
-        canSeeResource: role === 'PAYROLL_SPECIALIST' || role === 'PAYROLL_MANAGER' || role === 'HR_MANAGER' || role === 'SYSTEM_ADMIN',
-        canCreate: role === 'PAYROLL_SPECIALIST' || role === 'HR_MANAGER',
-        canEdit: role === 'PAYROLL_SPECIALIST' || role === 'HR_MANAGER',
-        canDelete: role === 'PAYROLL_MANAGER' || role === 'SYSTEM_ADMIN',
-        canApproveReject: role === 'PAYROLL_MANAGER' || role === 'SYSTEM_ADMIN',
+        canSeeResource: true,
+        canCreate: role === 'HR_MANAGER',
+        canEdit: role === 'HR_MANAGER',
+        canDelete: role === 'HR_MANAGER',
+        canApproveReject: role === 'HR_MANAGER',
       };
     }
 
     case 'allowances': {
-      // PAYROLL_SPECIALIST: create, view, update
-      // PAYROLL_MANAGER: approve, reject, delete
+      // Employee: read-only view
+      // Department Head: create/edit draft proposals
+      // HR Manager: full CRUD + approve/reject
+      // System Admin: read-only (should not manage day-to-day allowances)
       return {
         ...base,
-        canSeeResource: role === 'PAYROLL_SPECIALIST' || role === 'PAYROLL_MANAGER' || role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER' || role === 'SYSTEM_ADMIN',
-        canCreate: role === 'PAYROLL_SPECIALIST' || role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER',
-        canEdit: role === 'PAYROLL_SPECIALIST' || role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER',
-        canDelete: role === 'PAYROLL_MANAGER' || role === 'SYSTEM_ADMIN',
-        canApproveReject: role === 'PAYROLL_MANAGER' || role === 'SYSTEM_ADMIN',
+        canSeeResource: true,
+        canCreate: role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER',
+        canEdit: role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER',
+        canDelete: role === 'HR_MANAGER',
+        canApproveReject: role === 'HR_MANAGER',
       };
     }
 
     case 'tax-rules': {
-      // LEGAL_POLICY_ADMIN: create, view, update
+      // Employee: read-only summary
+      // Department Head: read-only
+      // HR Manager: read-only
+      // System Admin: system-level full control
       return {
         ...base,
-        canSeeResource: role === 'LEGAL_POLICY_ADMIN' || role === 'HR_MANAGER' || role === 'SYSTEM_ADMIN',
-        canCreate: role === 'LEGAL_POLICY_ADMIN' || role === 'SYSTEM_ADMIN',
-        canEdit: role === 'LEGAL_POLICY_ADMIN' || role === 'SYSTEM_ADMIN',
-        canDelete: false,
-        canApproveReject: false,
+        canSeeResource: true,
+        canCreate: role === 'SYSTEM_ADMIN',
+        canEdit: role === 'SYSTEM_ADMIN',
+        canDelete: role === 'SYSTEM_ADMIN',
+        canApproveReject: role === 'SYSTEM_ADMIN',
       };
     }
 
     case 'payroll-policies': {
-      // PAYROLL_SPECIALIST: create, view, update
-      // PAYROLL_MANAGER: approve, reject, delete
+      // Department Head: view only
+      // HR Manager: main owner (create/edit + approve/reject)
+      // System Admin: may view but not edit business rules
+      const canSee = role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER' || role === 'SYSTEM_ADMIN';
       return {
         ...base,
-        canSeeResource: role === 'PAYROLL_SPECIALIST' || role === 'PAYROLL_MANAGER' || role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER' || role === 'SYSTEM_ADMIN',
-        canCreate: role === 'PAYROLL_SPECIALIST' || role === 'HR_MANAGER',
-        canEdit: role === 'PAYROLL_SPECIALIST' || role === 'HR_MANAGER',
-        canDelete: role === 'PAYROLL_MANAGER' || role === 'SYSTEM_ADMIN',
-        canApproveReject: role === 'PAYROLL_MANAGER' || role === 'SYSTEM_ADMIN',
+        canSeeResource: canSee,
+        canCreate: role === 'HR_MANAGER',
+        canEdit: role === 'HR_MANAGER',
+        canDelete: role === 'HR_MANAGER',
+        canApproveReject: role === 'HR_MANAGER',
       };
     }
 
     case 'signing-bonuses': {
-      // PAYROLL_SPECIALIST: create, view, update
-      // PAYROLL_MANAGER: approve, reject, delete
+      // Department Head: propose (create/edit draft)
+      // HR Manager: full CRUD + approve/reject
+      // System Admin: should not touch day-to-day signing bonuses (view only)
       return {
         ...base,
-        canSeeResource: role === 'PAYROLL_SPECIALIST' || role === 'PAYROLL_MANAGER' || role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER' || role === 'SYSTEM_ADMIN',
-        canCreate: role === 'PAYROLL_SPECIALIST' || role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER',
-        canEdit: role === 'PAYROLL_SPECIALIST' || role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER',
-        canDelete: role === 'PAYROLL_MANAGER' || role === 'SYSTEM_ADMIN',
-        canApproveReject: role === 'PAYROLL_MANAGER' || role === 'SYSTEM_ADMIN',
+        canSeeResource:
+          role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER' || role === 'SYSTEM_ADMIN',
+        canCreate: role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER',
+        canEdit: role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER',
+        canDelete: role === 'HR_MANAGER',
+        canApproveReject: role === 'HR_MANAGER',
       };
     }
 
     case 'termination-resignation-benefits': {
-      // PAYROLL_SPECIALIST: create, view, update (benefits)
-      // PAYROLL_MANAGER: approve, reject, delete
+      // Department Head: propose
+      // HR Manager: full CRUD + approve/reject
+      // System Admin: view only
       return {
         ...base,
-        canSeeResource: role === 'PAYROLL_SPECIALIST' || role === 'PAYROLL_MANAGER' || role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER' || role === 'SYSTEM_ADMIN',
-        canCreate: role === 'PAYROLL_SPECIALIST' || role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER',
-        canEdit: role === 'PAYROLL_SPECIALIST' || role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER',
-        canDelete: role === 'PAYROLL_MANAGER' || role === 'SYSTEM_ADMIN',
-        canApproveReject: role === 'PAYROLL_MANAGER' || role === 'SYSTEM_ADMIN',
+        canSeeResource:
+          role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER' || role === 'SYSTEM_ADMIN',
+        canCreate: role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER',
+        canEdit: role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER',
+        canDelete: role === 'HR_MANAGER',
+        canApproveReject: role === 'HR_MANAGER',
       };
     }
 
     case 'insurance-brackets': {
-      // PAYROLL_SPECIALIST: create, view, update
-      // HR_MANAGER: approve, reject, delete
+      // Department Head: view only
+      // HR Manager: edit/content + approve/reject + delete
+      // System Admin: system-level control + override (same as HR + emergency)
+      const canSee =
+        role === 'DEPARTMENT_HEAD' || role === 'HR_MANAGER' || role === 'SYSTEM_ADMIN';
+      const canManage = role === 'HR_MANAGER' || role === 'SYSTEM_ADMIN';
       return {
         ...base,
-        canSeeResource: role === 'PAYROLL_SPECIALIST' || role === 'HR_MANAGER' || role === 'DEPARTMENT_HEAD' || role === 'SYSTEM_ADMIN',
-        canCreate: role === 'PAYROLL_SPECIALIST' || role === 'HR_MANAGER' || role === 'SYSTEM_ADMIN',
-        canEdit: role === 'PAYROLL_SPECIALIST' || role === 'HR_MANAGER' || role === 'SYSTEM_ADMIN',
-        canDelete: role === 'HR_MANAGER' || role === 'SYSTEM_ADMIN',
-        canApproveReject: role === 'HR_MANAGER' || role === 'SYSTEM_ADMIN',
+        canSeeResource: canSee,
+        canCreate: canManage,
+        canEdit: canManage,
+        canDelete: canManage,
+        canApproveReject: canManage,
       };
     }
 
     case 'company-wide-settings': {
-      // SYSTEM_ADMIN: create and edit
+      // System Admin only (global settings card)
       const canSee = role === 'SYSTEM_ADMIN';
       const canManage = role === 'SYSTEM_ADMIN';
       return {
@@ -198,7 +214,7 @@ export function getPayrollPermissions(
         canSeeResource: canSee,
         canCreate: canManage,
         canEdit: canManage,
-        canDelete: false,
+        canDelete: canManage,
         canApproveReject: false,
       };
     }
